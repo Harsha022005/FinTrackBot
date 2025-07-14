@@ -193,7 +193,7 @@ async function sendtext(chatid, text) {
   }
 }
 export async function setWebhook() {
-    const webhookUrl = `https://fintrackbot-1.onrender.com//bot`; 
+    const webhookUrl = `https://fintrackbot-1.onrender.com/bot`; 
     try {
         const response = await axios.get(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/setWebhook?url=${webhookUrl}`);
         console.log('Webhook set successfully:', response.data);
