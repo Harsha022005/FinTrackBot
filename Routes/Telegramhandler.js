@@ -102,45 +102,62 @@ async function handletodayexpenses(msg,text,userid,chatid){
     }
 }
 
-async function handleweeklyexpenses(msg,text,userid,chatid)
-{
-    let user=await User.findOne({telegramid:userid});
-    try{
-        if (!user){
-            user=new User({
-                telegramid:userid,
+async function handleweeklyexpenses(msg, text, userid, chatid) {
+    let user;
+    try {
+        user = await User.findOne({ telegramid: userid });
+        if (!user) {
+            user = new User({
+                telegramid: userid,
                 name: msg.from.first_name,
                 username: msg.from.username,
-                expenses: []  
+                expenses: []
             });
             await user.save();
             return sendtext(chatid, 'No weekly expenses found.');
         }
-    }
-    catch (err){
+    } catch (err) {
         console.error('Error finding or creating user:', err);
         return sendtext(chatid, 'An error occurred while processing your request.');
     }
-    const today=new Date();
-    const weekstartdate=new Date();
-    weekstartdate.setDate(today.getDate() - 7); 
-    const weeklyexpenses=[];
-    let total=0;
-    for (let i=0;i<user.expenses.length;i++)
-    {
-        const expensedate=new Date(user.expenses[i].date);
-        if (expensedate>=weekstartdate && expensedate<=today){
-            weeklyexpenses.push(user.expenses[i]);
-            total+=user.expenses[i].amount;
+
+    const today = new Date();
+    const weekStartDate = new Date();
+    weekStartDate.setDate(today.getDate() - 7);
+
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const groupedExpenses = {};
+    let total = 0;
+
+    for (const expense of user.expenses) {
+        const expDate = new Date(expense.date);
+        if (expDate >= weekStartDate && expDate <= today) {
+            const day = weekdays[expDate.getDay()];
+            if (!groupedExpenses[day]) {
+                groupedExpenses[day] = [];
+            }
+            groupedExpenses[day].push(expense);
+            total += expense.amount;
         }
     }
-    if (weeklyexpenses.length===0){
+
+    if (Object.keys(groupedExpenses).length === 0) {
         return sendtext(chatid, 'No weekly expenses found.');
     }
-    const message=`Weekly expenses:\n`+
-        weeklyexpenses.map(expense=>`Category: ${expense.category}, Amount: ${expense.amount}`).join('\n')+
-        `\nTotal: ${total}`;
-    return sendtext(chatid,message);
+
+    let message = `*Weekly Expenses by Day*\n\n`;
+    weekdays.forEach(day => {
+        if (groupedExpenses[day]) {
+            message += ` *${day}*\n`;
+            groupedExpenses[day].forEach(exp => {
+                message += `  • ₹${exp.amount} - ${exp.category}\n`;
+            });
+            message += '\n';
+        }
+    });
+    message += ` *Total:* ₹${total}`;
+
+    return sendtext(chatid, message);
 }
 
 async function handlemonthlyexpenses(msg, text, userid, chatid) {
