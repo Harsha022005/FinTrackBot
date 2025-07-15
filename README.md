@@ -31,4 +31,6 @@ usage:
   - "/todayexpenses"
   - "/weekly"
   - "/monthly"
+  - "/history"
+    
 
