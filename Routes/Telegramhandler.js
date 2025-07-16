@@ -13,6 +13,19 @@ export async function handletelegramupdates(msg){
     if (text==='/start'){
         return sendtext(chatid, 'Welcome to the Expense Tracker Bot! Use /addexpenses to add an expense, /todayexpenses to see today\'s expenses, /weekly for weekly expenses, and /monthly for monthly expenses.');
     }
+    else if (text === '/help') {
+    return sendtext(chatid, `
+Here are the available commands:
+
+/start - Welcome message  
+/addexpenses <amount> <category> - Add an expense  
+/todayexpenses - View today's expenses  
+/weekly - View weekly expenses  
+/monthly - View monthly expenses  
+/help - List of all commands
+`);
+}
+
     else if (text.startsWith('/addexpenses')){
         return await handleaddexpenses(msg,text,userid,chatid);
     }
