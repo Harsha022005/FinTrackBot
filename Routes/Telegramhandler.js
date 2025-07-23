@@ -25,7 +25,10 @@ Here are the available commands:
 /help - List of all commands
 `);
 }
-
+    else if (text.startsWith('/addrecurringexpenses')) 
+    {
+        return await handleaddrecurringexpenses(msg, text, userid, chatid);
+    }
     else if (text.startsWith('/addexpenses')){
         return await handleaddexpenses(msg,text,userid,chatid);
     }
@@ -37,6 +40,9 @@ Here are the available commands:
     }
     else if (text==='/monthly'){
         return await handlemonthlyexpenses(msg,text,userid,chatid);
+    }
+    else if(text==='/reminders'){
+        return await handleReminders(msg,text, userid, chatid);
     }
 }
 
@@ -80,6 +86,55 @@ async function handleaddexpenses(msg,text,userid,chatid)
         return sendtext(chatid, 'An error occurred while saving your expense.');
     }
 }
+async function handleaddrecurringexpenses(msg, text, userid, chatid) 
+{
+    const parts=text.split(' ');
+    if (parts.length<5){
+        return sendtext(chatid, 'Please provide the amount, category, frequency, and duration in the format: /addrecurringexpenses amount category frequency duration');
+    }
+    const amount=parseFloat(parts[1]);
+    const category=parts[2];
+    const frequency=parseFloat(parts[3]);
+    const duration=parts[4];
+    if (isNaN(amount) || amount<0){
+        return sendtext(chatid,'Please enter a valid amount');
+    }
+    if (isNaN(frequency) || frequency<=0){
+        return sendtext(chatid,'Please enter a valid frequency');
+    }
+    if (isNaN(duration) || duration<=0){
+        return sendtext(chatid,'Please enter a valid duration');
+    }
+    const user=await User.findOne({telegramid:userid});
+   try{
+     if (!user){
+        usernew=new User({
+            telegramid: userid,
+            name: msg.from.first_name,
+            username: msg.from.username,
+            recurringexpeses: []
+        })
+    }
+   }
+   catch (err){
+        console.error('Error finding or creating user:', err);
+        return sendtext(chatid, 'An error occurred while processing your request.');
+    }
+    user.recurringexpeses.push({
+        amount:amount,
+        category:category,
+        date:new Date(),
+        frequency:frequency,
+        duration:duration,
+        startdate:new Date(),
+        enddate:new Date(new Date().setFullYear(new Date().getFullYear()+duration))
+    })
+    await user.save();
+    console.log('Recurring expense saved successfully:', user);
+
+   }
+    
+
 
 async function handletodayexpenses(msg,text,userid,chatid){
     try{
