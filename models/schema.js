@@ -28,11 +28,12 @@ const recurringschema=new mongoose.Schema({
 
 })
 const remainderschema = new mongoose.Schema({
-    title:{type:String,required:true},
-    description:{type:String,required:true},
-    amount:{type:Number,required:true},
-    date:{type:Date}
     
+    amount:{type:Number,required:true},
+    category:{type:String,required:true},
+    duration:{type:Number,required:true},
+    date:{type:Date,default:Date.now},
+
 });
 const budgetalert=new mongoose.Schema({
     category:{type:String,required:true},

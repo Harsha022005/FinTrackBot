@@ -41,7 +41,7 @@ Here are the available commands:
     else if (text==='/monthly'){
         return await handlemonthlyexpenses(msg,text,userid,chatid);
     }
-    else if(text==='/reminders'){
+    else if(text==='/setreminder'){
         return await handleReminders(msg,text, userid, chatid);
     }
 }
@@ -86,6 +86,8 @@ async function handleaddexpenses(msg,text,userid,chatid)
         return sendtext(chatid, 'An error occurred while saving your expense.');
     }
 }
+
+
 async function handleaddrecurringexpenses(msg, text, userid, chatid) 
 {
     const parts=text.split(' ');
@@ -134,7 +136,38 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid)
 
    }
     
+async function handleReminders(msg, text, userid, chatid) 
+{
+   const parts=text.split(' ');
+   if (parts.length<4)
+   {
+         return sendtext(chatid, 'Please provide the amount,category and duration');
+   }
+   const amount=parseFloat(parts[1]);
+   const category=parts[2];
+    const duration=parseInt(parts[3]);
+    if (isNaN(amount) || amount<0){
+        return sendtext(chatid,'Please enter a valid amount');
+    }
+    try{
+        const user= await User.findOne({telegramid:userid});
+        if (!user)
+        {
+            user=new User({
+                telegramid: userid,
+                name: msg.from.first_name,
+                username: msg.from.username,
+                remainders: []
+            });
+            
+        }
+        user.remainders.push({
+            amount:amount
+        })
 
+    }
+
+}
 
 async function handletodayexpenses(msg,text,userid,chatid){
     try{
