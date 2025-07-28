@@ -81,18 +81,19 @@ async function handleaddexpenses(msg, text, userid, chatid) {
 async function handleaddrecurringexpenses(msg, text, userid, chatid) {
     const parts = text.split(' ');
     if (parts.length < 5) {
-        return sendtext(chatid, 'Please provide the amount, category, frequency, and duration in the format: /addrecurringexpenses amount category frequency duration');
+        return sendtext(chatid, 'Please provide the amount, category, frequency, and duration in the format: /addrecurringexpenses amount category frequency duration\nExample: /addrecurringexpenses 100 food daily 3');
     }
     const amount = parseFloat(parts[1]);
     const category = parts[2];
-    const frequency = parseFloat(parts[3]);
+    const frequency = parts[3].toLowerCase();
     const duration = parseInt(parts[4]);
 
+    const validFrequencies = ['daily', 'weekly', 'monthly'];
     if (isNaN(amount) || amount <= 0) {
         return sendtext(chatid, 'Please enter a valid amount');
     }
-    if (isNaN(frequency) || frequency <= 0) {
-        return sendtext(chatid, 'Please enter a valid frequency');
+    if (!validFrequencies.includes(frequency)) {
+        return sendtext(chatid, 'Please enter a valid frequency: daily, weekly, or monthly');
     }
     if (isNaN(duration) || duration <= 0) {
         return sendtext(chatid, 'Please enter a valid duration');
@@ -124,13 +125,14 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid) {
 
     await user.save();
     console.log('Recurring expense saved successfully:', user);
-    return sendtext(chatid, `Recurring expense of ₹${amount} for ${category} added successfully!`);
+    return sendtext(chatid, `Recurring expense of ₹${amount} for ${category} added successfully! Frequency: ${frequency}, Duration: ${duration}`);
 }
 
 async function handleReminders(msg, text, userid, chatid) {
+
     const parts = text.split(' ');
     if (parts.length < 4) {
-        return sendtext(chatid, 'Please provide the amount, category, and duration. Optionally you can add frequency (daily/weekly/monthly).');
+        return sendtext(chatid, 'Please provide the amount, category, and duration. Optionally you can add frequency (daily/weekly/monthly). Example: /setreminder 100 food 3 weekly');
     }
 
     const amount = parseFloat(parts[1]);
@@ -138,8 +140,12 @@ async function handleReminders(msg, text, userid, chatid) {
     const duration = parseInt(parts[3]);
     const frequency = parts[4]?.toLowerCase() || 'daily';
 
+    const validFrequencies = ['daily', 'weekly', 'monthly'];
     if (isNaN(amount) || amount <= 0 || isNaN(duration) || duration <= 0) {
         return sendtext(chatid, 'Invalid amount or duration.');
+    }
+    if (!validFrequencies.includes(frequency)) {
+        return sendtext(chatid, 'Please enter a valid frequency: daily, weekly, or monthly');
     }
 
     let user = await User.findOne({ telegramid: userid });
