@@ -1,27 +1,17 @@
 {
-<<<<<<< HEAD
+
   "name": "backend-2",
-=======
-<<<<<<< HEAD
+
   "name": "backend",
-=======
-  "name": "backend-2",
->>>>>>> 3bf2b29d9a896167dff249f1d1d238f0417194e4
->>>>>>> f8e2d8f24b634a23c23be5b67d5812ab28b9fffd
+
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
-<<<<<<< HEAD
     "start": "node index.js",
     "dev": "nodemon index.js",
-=======
-<<<<<<< HEAD
-=======
     "start": "node index.js",
     "dev": "nodemon index.js",
->>>>>>> 3bf2b29d9a896167dff249f1d1d238f0417194e4
->>>>>>> f8e2d8f24b634a23c23be5b67d5812ab28b9fffd
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -29,7 +19,6 @@
   "description": "",
   "dependencies": {
     "axios": "^1.10.0",
-<<<<<<< HEAD
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "mongodb": "^6.17.0",
@@ -37,16 +26,13 @@
     "node-cron": "^4.2.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
-=======
-<<<<<<< HEAD
+    "nodemon": "^3.1.10",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "passport-google-oauth20": "^2.0.0",
-    "pg": "^8.14.1"
-=======
+    "pg": "^8.14.1",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "mongodb": "^6.17.0",
@@ -54,7 +40,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
->>>>>>> 3bf2b29d9a896167dff249f1d1d238f0417194e4
->>>>>>> f8e2d8f24b634a23c23be5b67d5812ab28b9fffd
   }
 }

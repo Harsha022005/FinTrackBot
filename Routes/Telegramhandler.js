@@ -34,7 +34,7 @@ Here are the available commands:
         return await handleweeklyexpenses(msg, text, userid, chatid);
     } else if (text === '/monthly') {
         return await handlemonthlyexpenses(msg, text, userid, chatid);
-    } else if (text === '/setreminder') {
+    } else if (text.startsWith('/setreminder')) {
         return await handleReminders(msg, text, userid, chatid);
     } else {
         return sendtext(chatid, 'Invalid command. Type /help for the list of available commands.');
@@ -129,8 +129,7 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid) {
 }
 
 async function handleReminders(msg, text, userid, chatid) {
-
-    const parts = text.split(' ');
+    const parts = text.trim().split(/\s+/); 
     if (parts.length < 4) {
         return sendtext(chatid, 'Please provide the amount, category, and duration. Optionally you can add frequency (daily/weekly/monthly). Example: /setreminder 100 food 3 weekly');
     }
@@ -138,14 +137,14 @@ async function handleReminders(msg, text, userid, chatid) {
     const amount = parseFloat(parts[1]);
     const category = parts[2];
     const duration = parseInt(parts[3]);
-    const frequency = parts[4]?.toLowerCase() || 'daily';
+    const frequency = (parts[4] || 'daily').toLowerCase();
 
     const validFrequencies = ['daily', 'weekly', 'monthly'];
     if (isNaN(amount) || amount <= 0 || isNaN(duration) || duration <= 0) {
         return sendtext(chatid, 'Invalid amount or duration.');
     }
     if (!validFrequencies.includes(frequency)) {
-        return sendtext(chatid, 'Please enter a valid frequency: daily, weekly, or monthly');
+        return sendtext(chatid, ' Please enter a valid frequency: daily, weekly, or monthly');
     }
 
     let user = await User.findOne({ telegramid: userid });
@@ -182,8 +181,9 @@ async function handleReminders(msg, text, userid, chatid) {
     }
 
     await user.save();
-    return sendtext(chatid, `Reminder set: ₹${amount} for ${category} every ${frequency} for ${duration} time(s).`);
+    return sendtext(chatid, `Reminder set:\n• Amount: ₹${amount}\n• Category: ${category}\n• Every ${frequency}\n• For ${duration} time(s).`);
 }
+
 
 async function handletodayexpenses(msg, text, userid, chatid) {
     try {
