@@ -110,7 +110,7 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid)
     const user=await User.findOne({telegramid:userid});
    try{
      if (!user){
-        usernew=new User({
+        user=new User({
             telegramid: userid,
             name: msg.from.first_name,
             username: msg.from.username,
@@ -122,7 +122,7 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid)
         console.error('Error finding or creating user:', err);
         return sendtext(chatid, 'An error occurred while processing your request.');
     }
-    user.recurringexpeses.push({
+    user.recurringexpenses.push({
         amount:amount,
         category:category,
         date:new Date(),
@@ -131,43 +131,61 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid)
         startdate:new Date(),
         enddate:new Date(new Date().setFullYear(new Date().getFullYear()+duration))
     })
-    await user.save();
-    console.log('Recurring expense saved successfully:', user);
+await user.save();
+console.log('Recurring expense saved successfully:', user);
+return sendtext(chatid, `Recurring expense of ₹${amount} for ${category} added successfully!`);
 
    }
-    
-async function handleReminders(msg, text, userid, chatid) 
-{
-   const parts=text.split(' ');
-   if (parts.length<4)
-   {
-         return sendtext(chatid, 'Please provide the amount,category and duration');
-   }
-   const amount=parseFloat(parts[1]);
-   const category=parts[2];
-    const duration=parseInt(parts[3]);
-    if (isNaN(amount) || amount<0){
-        return sendtext(chatid,'Please enter a valid amount');
+    // Handle remainders
+async function handleReminders(msg, text, userid, chatid) {
+    const parts = text.split(' ');
+    if (parts.length < 4) {
+        return sendtext(chatid, 'Please provide the amount, category, and duration. Optionally you can add frequency (daily/weekly/monthly).');
     }
-    try{
-        const user= await User.findOne({telegramid:userid});
-        if (!user)
-        {
-            user=new User({
-                telegramid: userid,
-                name: msg.from.first_name,
-                username: msg.from.username,
-                remainders: []
-            });
-            
+
+    const amount = parseFloat(parts[1]);
+    const category = parts[2];
+    const duration = parseInt(parts[3]);
+    const frequency = parts[4]?.toLowerCase() || 'daily'; // default to daily if not specified
+
+    if (isNaN(amount) || amount <= 0 || isNaN(duration) || duration <= 0) {
+        return sendtext(chatid, 'Invalid amount or duration.');
+    }
+
+    let user = await User.findOne({ telegramid: userid });
+
+    if (!user) {
+        user = new User({
+            telegramid: userid,
+            name: msg.from.first_name,
+            username: msg.from.username,
+            remainders: []
+        });
+    }
+
+    const now = new Date();
+    for (let i = 0; i < duration; i++) {
+        const reminderDate = new Date(now);
+        if (frequency === 'monthly') {
+            reminderDate.setMonth(reminderDate.getMonth() + i);
+        } else if (frequency === 'weekly') {
+            reminderDate.setDate(reminderDate.getDate() + i * 7);
+        } else { // default daily
+            reminderDate.setDate(reminderDate.getDate() + i);
         }
-        user.remainders.push({
-            amount:amount
-        })
 
+        user.remainders.push({
+            amount: amount,
+            category: category,
+            duration: duration,
+            date: reminderDate
+        });
     }
 
+    await user.save();
+    return sendtext(chatid, `Reminder set: ₹${amount} for ${category} every ${frequency} for ${duration} time(s).`);
 }
+
 
 async function handletodayexpenses(msg,text,userid,chatid){
     try{
