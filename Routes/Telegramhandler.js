@@ -110,7 +110,11 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid)
     const user=await User.findOne({telegramid:userid});
    try{
      if (!user){
+<<<<<<< HEAD
         user=new User({
+=======
+        usernew=new User({
+>>>>>>> f8e2d8f24b634a23c23be5b67d5812ab28b9fffd
             telegramid: userid,
             name: msg.from.first_name,
             username: msg.from.username,
@@ -122,7 +126,11 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid)
         console.error('Error finding or creating user:', err);
         return sendtext(chatid, 'An error occurred while processing your request.');
     }
+<<<<<<< HEAD
     user.recurringexpenses.push({
+=======
+    user.recurringexpeses.push({
+>>>>>>> f8e2d8f24b634a23c23be5b67d5812ab28b9fffd
         amount:amount,
         category:category,
         date:new Date(),
@@ -131,6 +139,7 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid)
         startdate:new Date(),
         enddate:new Date(new Date().setFullYear(new Date().getFullYear()+duration))
     })
+<<<<<<< HEAD
 await user.save();
 console.log('Recurring expense saved successfully:', user);
 return sendtext(chatid, `Recurring expense of ₹${amount} for ${category} added successfully!`);
@@ -187,6 +196,46 @@ async function handleReminders(msg, text, userid, chatid) {
 }
 
 
+=======
+    await user.save();
+    console.log('Recurring expense saved successfully:', user);
+
+   }
+    
+async function handleReminders(msg, text, userid, chatid) 
+{
+   const parts=text.split(' ');
+   if (parts.length<4)
+   {
+         return sendtext(chatid, 'Please provide the amount,category and duration');
+   }
+   const amount=parseFloat(parts[1]);
+   const category=parts[2];
+    const duration=parseInt(parts[3]);
+    if (isNaN(amount) || amount<0){
+        return sendtext(chatid,'Please enter a valid amount');
+    }
+    try{
+        const user= await User.findOne({telegramid:userid});
+        if (!user)
+        {
+            user=new User({
+                telegramid: userid,
+                name: msg.from.first_name,
+                username: msg.from.username,
+                remainders: []
+            });
+            
+        }
+        user.remainders.push({
+            amount:amount
+        })
+
+    }
+
+}
+
+>>>>>>> f8e2d8f24b634a23c23be5b67d5812ab28b9fffd
 async function handletodayexpenses(msg,text,userid,chatid){
     try{
         let user=await User.findOne({telegramid:userid});
