@@ -1,9 +1,18 @@
 {
+<<<<<<< HEAD
   "name": "backend",
+=======
+  "name": "backend-2",
+>>>>>>> 3bf2b29d9a896167dff249f1d1d238f0417194e4
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
+<<<<<<< HEAD
+=======
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+>>>>>>> 3bf2b29d9a896167dff249f1d1d238f0417194e4
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,11 +20,21 @@
   "description": "",
   "dependencies": {
     "axios": "^1.10.0",
+<<<<<<< HEAD
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.14.1"
+=======
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+>>>>>>> 3bf2b29d9a896167dff249f1d1d238f0417194e4
   }
 }
