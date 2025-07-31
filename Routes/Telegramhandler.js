@@ -2,6 +2,7 @@ import express from 'express';
 import { User } from '../models/schema.js';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import {telegraf} from 'telegraf';
 dotenv.config();
 
 export async function handletelegramupdates(msg) {
@@ -11,8 +12,24 @@ export async function handletelegramupdates(msg) {
     console.log('Received message:', msg);
 
     if (text === '/start') {
-        return sendtext(chatid, 'Welcome to the Expense Tracker Bot! Use /addexpenses to add an expense, /todayexpenses to see today\'s expenses, /weekly for weekly expenses, and /monthly for monthly expenses.');
-    } else if (text === '/help') {
+    return sendtext(chatid, `👋 Welcome to the Expense Tracker Bot!
+
+Use the following commands:
+• /addexpenses - Add an expense  
+• /todayexpenses - See today’s expenses  
+• /weekly - Weekly expense summary  
+• /monthly - Monthly expense summary  
+• /botid - Get your unique Telegram ID to fetch expenses securely on our website
+• /help - See all commands
+
+🆔 *Your Telegram ID:* \`${userid}\``);
+}
+
+    else if(text==='/botid')
+        {
+            return await handlebotid(msg, text, userid, chatid);
+        } 
+    else if (text === '/help') {
         return sendtext(chatid, `
 Here are the available commands:
 /start - Welcome message  
@@ -21,7 +38,8 @@ Here are the available commands:
 /weekly - View weekly expenses  
 /monthly - View monthly expenses  
 /addrecurringexpenses <amount> <category> <frequency> <duration>  
-/setreminder <amount> <category> <duration> [daily|weekly|monthly]  
+/setreminder <amount> <category> <duration> [daily|weekly|monthly] 
+/botid - Get your unique Telegram ID to fetch expenses securely on our website
 /help - List of all commands
         `);
     } else if (text.startsWith('/addrecurringexpenses')) {
@@ -39,6 +57,11 @@ Here are the available commands:
     } else {
         return sendtext(chatid, 'Invalid command. Type /help for the list of available commands.');
     }
+}
+
+async function handlebotid(msg, text, userid, chatid) 
+{
+    return sendtext(chatid,`Your Telegram user ID is: ${userid}\nUse this ID to securely fetch your expenses on the dashboard.\nDo not share it with anyone.`)
 }
 
 async function handleaddexpenses(msg, text, userid, chatid) {
