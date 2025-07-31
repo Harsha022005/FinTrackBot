@@ -3,6 +3,7 @@ import connectDB from './models/db.js';
 import dotenv from 'dotenv';
 import { handletelegramupdates } from './Routes/Telegramhandler.js';
 import { setWebhook } from './Routes/Telegramhandler.js';
+import {fetchbotid} from './Routes/botid.js';
 
 setWebhook();
 
@@ -26,6 +27,8 @@ app.post('/bot', async (req, res) => {
     }
     res.sendStatus(200);
 });
+
+app.use('/getexpenses', fetchbotid);
 
 const startServer = async () => {
     await connectDB(); 
