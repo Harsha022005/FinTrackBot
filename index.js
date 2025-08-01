@@ -3,8 +3,8 @@ import connectDB from './models/db.js';
 import dotenv from 'dotenv';
 import { handletelegramupdates } from './Routes/Telegramhandler.js';
 import { setWebhook } from './Routes/Telegramhandler.js';
-import {fetchbotid} from './Routes/botid.js';
-
+import fetchbotid from './Routes/botid.js';
+import cors from 'cors';
 setWebhook();
 
 dotenv.config();
@@ -13,12 +13,17 @@ const port = 5000;
 
 const app = express();
 app.use(express.json());
-
 app.get('/', (req, res) => {
     console.log('Request received', req.body);
     res.send('Get request received');
 });
 
+// app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 
 app.post('/bot', async (req, res) => {
     const msg = req.body.message;
@@ -28,7 +33,7 @@ app.post('/bot', async (req, res) => {
     res.sendStatus(200);
 });
 
-app.use('/getexpenses', fetchbotid);
+app.use('/userdash/getexpenses', fetchbotid);
 
 const startServer = async () => {
     await connectDB(); 
