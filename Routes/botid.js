@@ -1,22 +1,29 @@
-const router=express.Router();
-import userschema from '../models/schema.js';
+import express from 'express';
+const router = express.Router();
+import { User } from '../models/schema.js';
 
-router.post('/fetch',async (req,res)=>{
-const {botid}=req.body;;
-    if (!botid ){
-        return res.status(500).json({success:false,message:"Bot ID is required"});
+router.post('/', async (req, res) => {
+const { botid ,offset,limit} = req.body;
+    if (!botid) {
+        return res.status(400).json({ success: false, message: "Bot ID is required" });
     }
-    try{
-        const response=await userschema.findOne({telegramid:botid});
-        if (!response){
-            return res.status(404).json({success:false,message:'User not found'});
-
+    try {
+        const user = await User.findOne({ telegramid: botid });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
-        return res.status(200).json({success:true,expenses:response.expenses});
+        console.log("BotID received:", botid);
+        const sortedexpenses=user.expenses.sort((a,b)=> new Date(b.date)- new Date(a.date));
 
+        const pagination=sortedexpenses.slice(offset,offset+limit);
+
+        return res.status(200).json({ 
+            success: true,
+             expenses: pagination 
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: 'Error fetching expenses', error: err.message });
     }
-    catch(err){
-        return res.status(500).json({success:false,message:'Error fetching expenses',error:err.message});
-    }
-})
+});
+
 export default router;
