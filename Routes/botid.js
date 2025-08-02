@@ -14,8 +14,8 @@ const { botid ,offset,limit} = req.body;
         }
         console.log("BotID received:", botid);
         const recurringexpenses=user.recurringexpenses || [];
-        const remainders=user.reminders || [];
-        const budgetalerts=user.budgetalerts || [];
+        const remainders=user.remainders || [];
+        // const budgetalerts=user.budgetalerts || [];
         const expenses=user.expenses || [];
         const sortedexpenses=expenses.sort((a,b)=> new Date(b.date)- new Date(a.date));
 
@@ -23,7 +23,10 @@ const { botid ,offset,limit} = req.body;
 
         return res.status(200).json({ 
             success: true,
-             expenses: pagination 
+             expenses: pagination ,
+             recurringexpenses,
+             remainders,
+             
         });
     } catch (err) {
         return res.status(500).json({ success: false, message: 'Error fetching expenses', error: err.message });
