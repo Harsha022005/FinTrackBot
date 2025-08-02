@@ -13,7 +13,11 @@ const { botid ,offset,limit} = req.body;
             return res.status(404).json({ success: false, message: 'User not found' });
         }
         console.log("BotID received:", botid);
-        const sortedexpenses=user.expenses.sort((a,b)=> new Date(b.date)- new Date(a.date));
+        const recurringexpenses=user.recurringexpenses || [];
+        const remainders=user.reminders || [];
+        const budgetalerts=user.budgetalerts || [];
+        const expenses=user.expenses || [];
+        const sortedexpenses=expenses.sort((a,b)=> new Date(b.date)- new Date(a.date));
 
         const pagination=sortedexpenses.slice(offset,offset+limit);
 
