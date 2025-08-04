@@ -17,6 +17,7 @@ const { botid ,offset,limit} = req.body;
         const remainders=user.remainders || [];
         // const budgetalerts=user.budgetalerts || [];
         const expenses=user.expenses || [];
+        const totalexpenses=expenses.reduce((sum,expense)=>sum+expense.amount,0)
         const sortedexpenses=expenses.sort((a,b)=> new Date(b.date)- new Date(a.date));
 
         const pagination=sortedexpenses.slice(offset,offset+limit);
@@ -26,6 +27,7 @@ const { botid ,offset,limit} = req.body;
              expenses: pagination ,
              recurringexpenses,
              remainders,
+             totalexpenses
              
         });
     } catch (err) {
