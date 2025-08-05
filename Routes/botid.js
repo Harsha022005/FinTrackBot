@@ -34,5 +34,26 @@ const { botid ,offset,limit} = req.body;
         return res.status(500).json({ success: false, message: 'Error fetching expenses', error: err.message });
     }
 });
+router.post('/deleteremainders',async(req,res)=>{
+    const {botid,index}=req.body;
+    if (!botid || index===undefined ||index<0 ){
+        return res.status(400).json({success:false,message:"Bot ID and index are required"});
+    }
+    try{
+        const user=await User.findOne({telegramid:botid});
+        if (!user){
+           return res.status(404).json({success:false,message:"No user found with that botid"})
+        }
+        if (index>=user.remainders.length){
+            return res.status(400).json({success:false,message:'index out of range'})
+        }
+        user.remainders.splice(index,1);
+        await user.save();
+        return res.status(200).json({success:true,message:'Remainder deleted successfully'});
+    }
+    catch(err){
+        return res.status(500).json({success:false,message:"Error deleting remainder",error:err.message});
+    }
+})
 
 export default router;
