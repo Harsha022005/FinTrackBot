@@ -12,34 +12,40 @@ export async function handletelegramupdates(msg) {
 
     if (text === '/start') {
         return sendtext(chatid, `
-*👋 Welcome to Expense Tracker Bot!*
+Welcome to Expense Tracker Bot!
 
-Track your expenses easily with these commands:
-- 📝 */addexpenses <amount> <category>* - Log a new expense
-- 📅 */todayexpenses* - View today's expenses
-- 📊 */weekly* - See weekly expense summary
-- 🗓️ */monthly* - See monthly expense summary
-- 🆔 */botid* - Get your unique Telegram ID
-- ℹ️ */help* - View all commands
+Easily manage your finances with these commands:
+- /addexpenses <amount> <category> - Log a new expense
+- /todayexpenses - View today's expenses
+- /weekly - See your weekly expense summary
+- /monthly - See your monthly expense summary
+- /addrecurringexpenses <amount> <category> <frequency> <duration> - Set recurring expenses
+- /setreminder <amount> <category> <duration> [daily|weekly|monthly] - Set expense reminders
+- /botid - Get your unique Telegram ID for secure access
+- /help - View all available commands
 
-*🆔 Your Telegram ID:* \`${userid}\`
-_Use this ID to access your expenses securely on our website._`);
+Your Telegram ID: \`${userid}\`
+Use this ID to securely access your expenses on our website.
+Start tracking now and take control of your finances!
+`);
     } else if (text === '/botid') {
         return await handlebotid(msg, text, userid, chatid);
     } else if (text === '/help') {
         return sendtext(chatid, `
-*ℹ️ Expense Tracker Bot Commands*
+Expense Tracker Bot Commands
 
-Here's how to use the bot:
-- *👋 /start* - Welcome message
-- *📝 /addexpenses <amount> <category>* - Add an expense (e.g., /addexpenses 50 coffee)
-- *📅 /todayexpenses* - View today's expenses
-- *📊 /weekly* - Weekly expense summary
-- *🗓️ /monthly* - Monthly expense summary
-- *🔄 /addrecurringexpenses <amount> <category> <frequency> <duration>* - Add recurring expense (e.g., /addrecurringexpenses 100 rent monthly 6)
-- *🔔 /setreminder <amount> <category> <duration> [daily|weekly|monthly]* - Set reminders (e.g., /setreminder 100 groceries 3 weekly)
-- *🆔 /botid* - Get your Telegram ID for secure access
-- *ℹ️ /help* - Show this menu
+Manage your finances effortlessly:
+- /start - Get started with the bot
+- /addexpenses <amount> <category> - Add an expense (e.g., /addexpenses 50 coffee)
+- /todayexpenses - View today's expenses
+- /weekly - Weekly expense summary
+- /monthly - Monthly expense summary
+- /addrecurringexpenses <amount> <category> <frequency> <duration> - Add recurring expenses (e.g., /addrecurringexpenses 100 rent monthly 6)
+- /setreminder <amount> <category> <duration> [daily|weekly|monthly] - Set reminders (e.g., /setreminder 100 groceries 3 weekly)
+- /botid - Get your Telegram ID for secure website access
+- /help - Show this menu
+
+Start tracking your expenses today!
 `);
     } else if (text.startsWith('/addrecurringexpenses')) {
         return await handleaddrecurringexpenses(msg, text, userid, chatid);
@@ -55,43 +61,41 @@ Here's how to use the bot:
         return await handleReminders(msg, text, userid, chatid);
     } else {
         return sendtext(chatid, `
-*❌ Invalid Command*
+Invalid Command
 
-Please use a valid command. Type *ℹ️ /help* to see the full list.
+Please use a valid command. Type /help to see all available commands.
 `);
     }
 }
+
 async function handlebotid(msg, text, userid, chatid) {
-  const url = "https://fintrackbot-1.onrender.com/duplicate-dashboard"; 
-  const message = `
-*🆔 Your Telegram ID*
-\`${userid}\`
+    const url = "https://fintrackbot-1.onrender.com/duplicate-dashboard"; 
+    const message = `
+🆔 Your Telegram ID: \`${userid}\`
 
 🔗 [Access Your Dashboard](${url})
 
-*🔐 Use this ID to securely access your expenses on our website.*
-_⚠️ Keep it private and do not share it!_
-  `;
-  return sendtext(chatid, message);
+Use this ID to securely view and manage your expenses on our website. Keep it private for your security!
+`;
+    return sendtext(chatid, message);
 }
-
 
 async function handleaddexpenses(msg, text, userid, chatid) {
     const parts = text.split(' ');
     if (parts.length < 3) {
         return sendtext(chatid, `
-*❌ Invalid Format*
-Please use: *📝 /addexpenses <amount> <category>*
-Example: */addexpenses 50 coffee*
+Invalid Format
+Please use: /addexpenses <amount> <category>
+Example: /addexpenses 50 coffee
 `);
     }
     const amount = parseFloat(parts[1]);
     const category = parts.slice(2).join(' ');
     if (isNaN(amount) || amount < 0) {
         return sendtext(chatid, `
-*❌ Invalid Amount*
+Invalid Amount
 Please enter a valid number for the amount.
-Example: */addexpenses 50 coffee*
+Example: /addexpenses 50 coffee
 `);
     }
 
@@ -115,14 +119,15 @@ Example: */addexpenses 50 coffee*
         await user.save();
         console.log('Expense saved successfully:', user);
         return sendtext(chatid, `
-*✅ Expense Added!*
-- *Amount:* ₹${amount}
-- *Category:* ${category}
+Expense Added!
+- Amount: ₹${amount}
+- Category: ${category}
+Track more expenses with /addexpenses!
 `);
     } catch (err) {
         console.error('Error saving expense:', err);
         return sendtext(chatid, `
-*❌ Error*
+Error
 Could not save your expense. Please try again later.
 `);
     }
@@ -132,9 +137,9 @@ async function handleaddrecurringexpenses(msg, text, userid, chatid) {
     const parts = text.split(' ');
     if (parts.length < 5) {
         return sendtext(chatid, `
-*❌ Invalid Format*
-Please use: *🔄 /addrecurringexpenses <amount> <category> <frequency> <duration>*
-Example: */addrecurringexpenses 100 rent monthly 6*
+Invalid Format
+Please use: /addrecurringexpenses <amount> <category> <frequency> <duration>
+Example: /addrecurringexpenses 100 rent monthly 6
 `);
     }
     const amount = parseFloat(parts[1]);
@@ -145,23 +150,23 @@ Example: */addrecurringexpenses 100 rent monthly 6*
     const validFrequencies = ['daily', 'weekly', 'monthly'];
     if (isNaN(amount) || amount <= 0) {
         return sendtext(chatid, `
-*❌ Invalid Amount*
+Invalid Amount
 Please enter a valid number for the amount.
-Example: */addrecurringexpenses 100 rent monthly 6*
+Example: /addrecurringexpenses 100 rent monthly 6
 `);
     }
     if (!validFrequencies.includes(frequency)) {
         return sendtext(chatid, `
-*❌ Invalid Frequency*
-Please use: *daily*, *weekly*, or *monthly*.
-Example: */addrecurringexpenses 100 rent monthly 6*
+Invalid Frequency
+Please use: daily, weekly, or monthly.
+Example: /addrecurringexpenses 100 rent monthly 6
 `);
     }
     if (isNaN(duration) || duration <= 0) {
         return sendtext(chatid, `
-*❌ Invalid Duration*
+Invalid Duration
 Please enter a valid number for duration.
-Example: */addrecurringexpenses 100 rent monthly 6*
+Example: /addrecurringexpenses 100 rent monthly 6
 `);
     }
 
@@ -192,11 +197,12 @@ Example: */addrecurringexpenses 100 rent monthly 6*
     await user.save();
     console.log('Recurring expense saved successfully:', user);
     return sendtext(chatid, `
-*✅ Recurring Expense Added!*
-- *Amount:* ₹${amount}
-- *Category:* ${category}
-- *Frequency:* ${frequency}
-- *Duration:* ${duration} time(s)
+Recurring Expense Added!
+- Amount: ₹${amount}
+- Category: ${category}
+- Frequency: ${frequency}
+- Duration: ${duration} time(s)
+Manage your recurring expenses with ease!
 `);
 }
 
@@ -204,9 +210,9 @@ async function handleReminders(msg, text, userid, chatid) {
     const parts = text.trim().split(/\s+/);
     if (parts.length < 4) {
         return sendtext(chatid, `
-*❌ Invalid Format*
-Please use: *🔔 /setreminder <amount> <category> <duration> [daily|weekly|monthly]*
-Example: */setreminder 100 groceries 3 weekly*
+Invalid Format
+Please use: /setreminder <amount> <category> <duration> [daily|weekly|monthly]
+Example: /setreminder 100 groceries 3 weekly
 `);
     }
 
@@ -218,16 +224,16 @@ Example: */setreminder 100 groceries 3 weekly*
     const validFrequencies = ['daily', 'weekly', 'monthly'];
     if (isNaN(amount) || amount <= 0 || isNaN(duration) || duration <= 0) {
         return sendtext(chatid, `
-*❌ Invalid Input*
+Invalid Input
 Please provide a valid amount and duration.
-Example: */setreminder 100 groceries 3 weekly*
+Example: /setreminder 100 groceries 3 weekly
 `);
     }
     if (!validFrequencies.includes(frequency)) {
         return sendtext(chatid, `
-*❌ Invalid Frequency*
-Please use: *daily*, *weekly*, or *monthly*.
-Example: */setreminder 100 groceries 3 weekly*
+Invalid Frequency
+Please use: daily, weekly, or monthly.
+Example: /setreminder 100 groceries 3 weekly
 `);
     }
 
@@ -266,11 +272,12 @@ Example: */setreminder 100 groceries 3 weekly*
 
     await user.save();
     return sendtext(chatid, `
-*🔔 Reminder Set!*
-- *Amount:* ₹${amount}
-- *Category:* ${category}
-- *Frequency:* ${frequency}
-- *Duration:* ${duration} time(s)
+Reminder Set!
+- Amount: ₹${amount}
+- Category: ${category}
+- Frequency: ${frequency}
+- Duration: ${duration} time(s)
+Stay on top of your expenses with reminders!
 `);
 }
 
@@ -286,8 +293,9 @@ async function handletodayexpenses(msg, text, userid, chatid) {
             });
             await user.save();
             return sendtext(chatid, `
-*📅 Today's Expenses*
+Today's Expenses
 No expenses recorded for today.
+Start tracking with /addexpenses!
 `);
         }
 
@@ -307,27 +315,27 @@ No expenses recorded for today.
 
         if (todayexpenses.length === 0) {
             return sendtext(chatid, `
-*📅 Today's Expenses*
+Today's Expenses
 No expenses recorded for today.
 ${remaindersDueToday.length > 0 ? `
-*🔔 Reminders Due Today*
+Reminders Due Today
 ${remaindersDueToday.map(r => `- ₹${r.amount} - ${r.category}`).join('\n')}
 ` : ''}`);
         }
 
         const total = todayexpenses.reduce((sum, e) => sum + e.amount, 0);
         return sendtext(chatid, `
-*📅 Today's Expenses*
+Today's Expenses
 ${todayexpenses.map(e => `- ₹${e.amount} - ${e.category}`).join('\n')}
-*Total:* ₹${total}
+Total: ₹${total}
 ${remaindersDueToday.length > 0 ? `
-*🔔 Reminders Due Today*
+Reminders Due Today
 ${remaindersDueToday.map(r => `- ₹${r.amount} - ${r.category}`).join('\n')}
 ` : ''}`);
     } catch (err) {
         console.error('Error retrieving today\'s expenses:', err);
         return sendtext(chatid, `
-*❌ Error*
+Error
 Could not retrieve today's expenses. Please try again later.
 `);
     }
@@ -344,8 +352,9 @@ async function handleweeklyexpenses(msg, text, userid, chatid) {
         });
         await user.save();
         return sendtext(chatid, `
-*📊 Weekly Expenses*
+Weekly Expenses
 No expenses recorded for the past week.
+Start tracking with /addexpenses!
 `);
     }
 
@@ -369,18 +378,19 @@ No expenses recorded for the past week.
 
     if (Object.keys(groupedExpenses).length === 0) {
         return sendtext(chatid, `
-*📊 Weekly Expenses*
+Weekly Expenses
 No expenses recorded for the past week.
+Start tracking with /addexpenses!
 `);
     }
 
-    let message = `*📊 Weekly Expenses*\n\n`;
+    let message = `Weekly Expenses\n\n`;
     weekdays.forEach(day => {
         if (groupedExpenses[day]) {
-            message += `*${day}*\n${groupedExpenses[day].map(exp => `- ₹${exp.amount} - ${exp.category}`).join('\n')}\n\n`;
+            message += `${day}\n${groupedExpenses[day].map(exp => `- ₹${exp.amount} - ${exp.category}`).join('\n')}\n\n`;
         }
     });
-    message += `*Total:* ₹${total}`;
+    message += `Total: ₹${total}`;
 
     const remaindersDueToday = user.remainders.filter(reminder => {
         const reminderDate = new Date(reminder.date);
@@ -390,7 +400,7 @@ No expenses recorded for the past week.
     });
 
     return sendtext(chatid, message, remaindersDueToday.length > 0 ? `
-*🔔 Reminders Due Today*
+Reminders Due Today
 ${remaindersDueToday.map(r => `- ₹${r.amount} - ${r.category}`).join('\n')}
 ` : '');
 }
@@ -406,8 +416,9 @@ async function handlemonthlyexpenses(msg, text, userid, chatid) {
         });
         await user.save();
         return sendtext(chatid, `
-*🗓️ Monthly Expenses*
+Monthly Expenses
 No expenses recorded for this month.
+Start tracking with /addexpenses!
 `);
     }
 
@@ -422,16 +433,17 @@ No expenses recorded for this month.
 
     if (monthlyExpenses.length === 0) {
         return sendtext(chatid, `
-*🗓️ Monthly Expenses*
+Monthly Expenses
 No expenses recorded for this month.
+Start tracking with /addexpenses!
 `);
     }
 
     const total = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
     const message = `
-*🗓️ Monthly Expenses*
+Monthly Expenses
 ${monthlyExpenses.map(e => `- ₹${e.amount} - ${e.category}`).join('\n')}
-*Total:* ₹${total}
+Total: ₹${total}
 `;
     return sendtext(chatid, message);
 }
