@@ -61,16 +61,20 @@ Please use a valid command. Type *ℹ️ /help* to see the full list.
 `);
     }
 }
-
 async function handlebotid(msg, text, userid, chatid) {
-    return sendtext(chatid, `
+  const url = "https://fintrackbot-1.onrender.com/duplicate-dashboard"; 
+  const message = `
 *🆔 Your Telegram ID*
 \`${userid}\`
 
+🔗 [Access Your Dashboard](${url})
+
 *🔐 Use this ID to securely access your expenses on our website.*
 _⚠️ Keep it private and do not share it!_
-`);
+  `;
+  return sendtext(chatid, message);
 }
+
 
 async function handleaddexpenses(msg, text, userid, chatid) {
     const parts = text.split(' ');

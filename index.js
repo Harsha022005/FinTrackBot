@@ -13,6 +13,7 @@ const port = 5000;
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
 app.get('/', (req, res) => {
     console.log('Request received', req.body);
     res.send('Get request received');
@@ -27,6 +28,7 @@ app.use(cors({
 
 app.post('/bot', async (req, res) => {
     const msg = req.body.message;
+    console.log('Request received', req.body); 
     if (msg) {
         await handletelegramupdates(msg);
     }
