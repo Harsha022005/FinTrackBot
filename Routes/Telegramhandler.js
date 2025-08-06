@@ -69,7 +69,7 @@ Please use a valid command. Type /help to see all available commands.
 }
 
 async function handlebotid(msg, text, userid, chatid) {
-    const url = "https://fintrackbot-1.onrender.com/duplicate-dashboard"; 
+    const url = "https://fintrackbotwebsite-7iqj.vercel.app/"; 
     const message = `
 🆔 Your Telegram ID: \`${userid}\`
 
