@@ -19,9 +19,13 @@ app.get('/', (req, res) => {
     res.send('Get request received');
 });
 
-// app.use(cors());
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://fintrackbotwebsite-7iqj.vercel.app'
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: allowedOrigins,
   methods: ['GET', 'POST'],
   credentials: true
 }));
