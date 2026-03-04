@@ -465,11 +465,32 @@ async function sendtext(chatid, text, extra = '') {
 }
 
 export async function setWebhook() {
-    const webhookUrl = `https://fintrackbot-1.onrender.com/bot`;
+    const webhookUrl = `${process.env.WEBHOOK_URL}/bot`;
+    console.log(' [SETTING WEBHOOK]', { webhookUrl });
+
     try {
-        const response = await axios.get(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/setWebhook?url=${webhookUrl}`);
-        console.log('Webhook set successfully:', response.data);
+        const response = await axios.get(
+            `https://api.telegram.org/bot${process.env.BOT_TOKEN}/setWebhook?url=${webhookUrl}&drop_pending_updates=true`
+        );
+
+        console.log(' [WEBHOOK SET SUCCESS]', {
+            status: response.status,
+            data: response.data
+        });
+
+        // Verify webhook info
+        const info = await axios.get(
+            `https://api.telegram.org/bot${process.env.BOT_TOKEN}/getWebhookInfo`
+        );
+        console.log(' [WEBHOOK INFO]', info.data);
+
+        return response.data;
     } catch (error) {
-        console.error('Error setting webhook:', error);
+        console.error(' [WEBHOOK ERROR]', {
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message
+        });
+        throw error;
     }
 }
