@@ -77,4 +77,29 @@ router.post('/deleterecurringexpense',async(req,res)=>{
     }
 })
 
+router.post('/getCurrentMonthexpenses',async(req,res)=>{
+    const {botid}=req.body;
+    if(!botid){
+        return res.status(400).json({success:false,message:'Bot ID is required'});
+    }
+    try{
+        const user=await User.findOne({telegramid:botid});
+        if(user)
+        {
+            const today=new Date()
+            const currentMonth=today.getMonth() ;
+            const currentYear=today.getFullYear();
+
+            const totalcurrent_monthExpenses=user.expenses.filter(exp=>{
+                const expDate=new Date(exp.date);
+                return expDate.getMonth()===currentMonth && expDate.getFullYear()===currentYear;
+            });
+            return res.status(200).json({success:true,currentMonthExpenses:totalcurrent_monthExpenses});
+        }
+    }
+    catch(err){
+        return res.status(500).json({success:false,message:"Error fetching current month expenses",error:err.message});
+    }
+})
+
 export default router;
