@@ -90,11 +90,12 @@ router.post('/getCurrentMonthexpenses',async(req,res)=>{
             const currentMonth=today.getMonth() ;
             const currentYear=today.getFullYear();
 
-            const totalcurrent_monthExpenses=user.expenses.filter(exp=>{
+            const current_monthExpenses=user.expenses.filter(exp=>{
                 const expDate=new Date(exp.date);
                 return expDate.getMonth()===currentMonth && expDate.getFullYear()===currentYear;
             });
-            return res.status(200).json({success:true,currentMonthExpenses:totalcurrent_monthExpenses});
+            const totalAmount=current_monthExpenses.reduce((sum,exp)=>sum+exp.amount||0,0);
+            return res.status(200).json({success:true,currentMonthExpenses:totalAmount});
         }
     }
     catch(err){
